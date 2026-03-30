@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Fluid type scale ─────────────────────────────────────────────────────── */
+:root {
+  --text-display:  clamp(2.5rem, 4vw + 1rem, 4rem);
+  --text-title:    clamp(3rem, 5vw + 1rem, 6rem);
+  --text-heading:  clamp(2rem, 3vw + 0.5rem, 4.375rem);
+  --text-body-lg:  clamp(1.125rem, 1.5vw + 0.5rem, 1.875rem);
+  --text-body:     clamp(1rem, 1vw + 0.5rem, 1.25rem);
+  --text-tag:      clamp(0.75rem, 0.8vw + 0.2rem, 1rem);
+  --text-label:    clamp(1rem, 1.2vw + 0.3rem, 1.375rem);
+
+  --surface-white: #fbfbfb;
+  --surface-black: #171717;
+  --surface-elevation: #efefef;
+  --brand-yellow: #ffdd00;
+  --text-gray: #777;
+}
+
+/* ── Global reset ─────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--surface-white);
+  cursor: none;
+}
+
+/* ── Pencil cursor ────────────────────────────────────────────────────────── */
+#pencil-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 52px;
+  line-height: 1;
+  transform: scaleX(-1);
+  user-select: none;
+  display: none;
+}
+
+/* ── Case study panel scroll ──────────────────────────────────────────────── */
+.case-study-scroll {
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.case-study-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── iOS FLIP animation ───────────────────────────────────────────────────── */
+.case-panel {
+  position: fixed;
+  z-index: 50;
+  transform-origin: top left;
+  will-change: transform, opacity;
+}
+
+.case-panel--entering {
+  transition:
+    transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 110ms ease;
+}
+
+.case-panel--exiting {
+  transition:
+    transform 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 100ms ease 80ms;
+}
+
+/* ── Color swatch ────────────────────────────────────────────────────────── */
+.swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s;
+  outline: none;
+  flex-shrink: 0;
+  position: relative;
+}
+.swatch::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color 0.15s;
+}
+.swatch.active::after { border-color: rgba(0,0,0,0.4); }
+.swatch[data-color="#ffdd00"].active::after { border-color: rgba(180,140,0,0.55); }
+.swatch[data-color="#19d9ff"].active::after { border-color: rgba(0,150,200,0.55); }
+.swatch:hover { transform: scale(1.08); }
+
+/* ── Control buttons ─────────────────────────────────────────────────────── */
+.ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  color: #444;
+  transition: background 0.12s, color 0.12s;
+}
+.ctrl-btn:hover { background: rgba(0,0,0,0.05); color: #111; }
+.ctrl-btn:active { background: rgba(0,0,0,0.09); }
+.ctrl-btn:disabled { opacity: 0.25; cursor: default; }
+.ctrl-btn:disabled:hover { background: transparent; color: #444; }
+.ctrl-btn .material-icons { font-size: 20px; user-select: none; }
+
+/* ── Typography utilities ─────────────────────────────────────────────────── */
+.font-dm      { font-family: 'DM Sans', sans-serif; }
+.font-forum   { font-family: 'Forum', serif; }
+.font-onest   { font-family: 'Onest', sans-serif; font-weight: 600; }
+.font-instrument { font-family: 'Instrument Sans', sans-serif; }
+.font-quicksand  { font-family: 'Quicksand', sans-serif; font-weight: 700; }
