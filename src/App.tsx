@@ -2,7 +2,7 @@ import { useRef, useState, useCallback } from 'react'
 import PencilCanvas from './components/PencilCanvas'
 import HeroSection from './components/HeroSection'
 import CaseStudyPanel from './components/CaseStudyPanel'
-import { caseStudies, type CaseStudy } from './data/caseStudies'
+import { type CaseStudy } from './data/caseStudies'
 
 interface ActiveStudy {
   study: CaseStudy
@@ -26,10 +26,6 @@ export default function App() {
   function handleClear() { clearRef.current?.() }
   function handleUndo() { undoRef.current?.() }
   function handleRedo() { redoRef.current?.() }
-
-  function handleOpenStudy(study: CaseStudy, cardRect: DOMRect) {
-    setActive({ study, cardRect })
-  }
 
   function handleCloseStudy() {
     setActive(null)
