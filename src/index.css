@@ -42,7 +42,6 @@ body {
   position: fixed;
   pointer-events: none;
   z-index: 9999;
-  width: 52px;
   transform: scaleX(-1);
   user-select: none;
   display: none;

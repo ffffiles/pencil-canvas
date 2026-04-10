@@ -283,7 +283,7 @@ export default function PencilCanvas({ onClearRef, onUndoRef, onRedoRef, onCount
         className="fixed inset-0 z-0"
         style={{ pointerEvents: disabled ? 'none' : 'auto' }}
       />
-      <div ref={cursorRef} id="pencil-cursor"><img src="/images/cursor-pencil.svg" alt="" draggable={false} /></div>
+      <div ref={cursorRef} id="pencil-cursor"><img src="/images/cursor-pencil.svg" alt="" draggable={false} style={{ width: 52, height: 52, objectFit: 'contain' }} /></div>
       <div
         ref={hintRef}
         id="pencil-hint"
