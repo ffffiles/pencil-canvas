@@ -148,7 +148,7 @@ export default function PencilCanvas({ onClearRef, onUndoRef, onRedoRef, onCount
       const overInteractive = isOverInteractive(x, y)
       const cursor = cursorRef.current
       if (cursor) {
-        cursor.style.left = (x - 5) + 'px'
+        cursor.style.left = (x - 1) + 'px'
         cursor.style.top = (y - 40) + 'px'
         cursor.style.display = overInteractive ? 'none' : 'block'
       }
