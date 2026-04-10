@@ -86,7 +86,7 @@ export default function HeroSection({
               href="mailto:carlfiler@me.com"
               className="flex items-center gap-2 bg-[var(--surface-elevation)] rounded-[4px] p-2 cursor-pointer no-underline"
             >
-              <svg className="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="4" width="20" height="16" rx="2" stroke="#777" strokeWidth="1.5"/><path d="M2 8l10 6 10-6" stroke="#777" strokeWidth="1.5"/></svg>
+              <img src="/images/icon-mail.svg" alt="" className="w-6 h-6 shrink-0" />
               <span
                 className="font-dm font-semibold text-base tracking-[-0.32px] text-[var(--text-gray)] whitespace-nowrap"
                 style={{ fontVariationSettings: "'opsz' 14" }}
@@ -100,7 +100,7 @@ export default function HeroSection({
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-[var(--surface-elevation)] rounded-[4px] p-2 cursor-pointer no-underline"
             >
-              <svg className="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="4" stroke="#777" strokeWidth="1.5"/><path d="M7 10v7M7 7v.5" stroke="#777" strokeWidth="1.5" strokeLinecap="round"/><path d="M11 17v-4c0-1.105.895-2 2-2s2 .895 2 2v4M11 10v7" stroke="#777" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              <img src="/images/icon-linkedin.svg" alt="LinkedIn" className="w-6 h-6 shrink-0" />
               <span
                 className="font-dm font-semibold text-base tracking-[-0.32px] text-[var(--text-gray)] whitespace-nowrap"
                 style={{ fontVariationSettings: "'opsz' 14" }}
