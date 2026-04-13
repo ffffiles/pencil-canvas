@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-[1600px]">
         <a
           href="mailto:carlfiler@me.com"
-          className="bg-[var(--black-elevation)] rounded-[clamp(24px,5vw,80px)] flex items-center justify-between px-[clamp(24px,5vw,100px)] py-[clamp(40px,5vw,100px)] no-underline transition-transform duration-150 ease-out active:scale-[0.96]"
+          className="bg-[var(--black-elevation)] hover:bg-[#2a2929] rounded-[clamp(24px,5vw,80px)] flex items-center justify-between px-[clamp(24px,5vw,100px)] py-[clamp(40px,5vw,100px)] no-underline transition-all duration-150 ease-out active:scale-[0.96]"
         >
           <span className="font-domine font-normal text-[clamp(16px,2vw,24px)] leading-[1.4] tracking-[-0.48px] text-[var(--surface-white)]">
             carlfiler@me.com
@@ -18,7 +18,7 @@ export default function Footer() {
           href="https://www.linkedin.com/in/carlfiler"
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-[var(--black-elevation)] rounded-[clamp(24px,5vw,80px)] flex items-center justify-between px-[clamp(24px,5vw,100px)] py-[clamp(40px,5vw,100px)] no-underline transition-transform duration-150 ease-out active:scale-[0.96]"
+          className="bg-[var(--black-elevation)] hover:bg-[#2a2929] rounded-[clamp(24px,5vw,80px)] flex items-center justify-between px-[clamp(24px,5vw,100px)] py-[clamp(40px,5vw,100px)] no-underline transition-all duration-150 ease-out active:scale-[0.96]"
         >
           <span className="font-domine font-normal text-[clamp(16px,2vw,24px)] leading-[1.4] tracking-[-0.48px] text-[var(--surface-white)]">
             LinkedIn

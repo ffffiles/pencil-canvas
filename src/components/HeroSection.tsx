@@ -59,8 +59,8 @@ export default function HeroSection({
       </div>
 
       {/* Centered content — matches Figma: 800px wide, vertically centered */}
-      <div className="absolute inset-0 flex items-center justify-center overflow-y-auto py-20 pointer-events-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex flex-col items-center w-[min(800px,90vw)] pointer-events-none my-auto">
+      <div className="absolute inset-0 flex items-center justify-center overflow-y-auto py-20 pointer-events-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-contain">
+        <div className="flex flex-col items-center w-[min(800px,90vw)] pointer-events-none my-auto shrink-0">
 
           {/* Hero headline */}
           <p
@@ -71,7 +71,7 @@ export default function HeroSection({
           </p>
 
           {/* Contact pills */}
-          <div className="mb-20 flex gap-2 items-center pointer-events-auto" data-entrance="2">
+          <div className="mb-10 md:mb-20 flex gap-2 items-center pointer-events-auto" data-entrance="2">
             <a
               href="mailto:carlfiler@me.com"
               className="flex items-center gap-2 bg-[var(--button-gray)] rounded-[4px] p-2 cursor-pointer no-underline transition-transform duration-150 ease-out active:scale-[0.96]"
