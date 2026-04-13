@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drawing Background</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #fbfbfb;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      cursor: none;
+    }
+
+    #pencil-cursor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 100;
+      font-size: 52px;
+      line-height: 1;
+      transform: scaleX(-1);
+      user-select: none;
+      display: none;
+    }
+
+    #topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #palette {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #fbfbfb;
+      border: 1px solid #efefef;
+      border-radius: 100px;
+      padding: 6px 8px;
+      box-shadow: 0 8px 8px -8px rgba(0,0,0,0.25);
+      pointer-events: all;
+    }
+
+    .swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      cursor: none;
+      transition: transform 0.15s;
+      outline: none;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .swatch::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      transition: border-color 0.15s;
+    }
+
+    .swatch.active::after { border-color: rgba(0,0,0,0.4); }
+    .swatch[data-color="#ffdd00"].active::after { border-color: rgba(180,140,0,0.55); }
+    .swatch[data-color="#19d9ff"].active::after { border-color: rgba(0,150,200,0.55); }
+    .swatch:hover { transform: scale(1.08); }
+
+    #controls {
+      display: flex;
+      align-items: center;
+      pointer-events: all;
+    }
+
+    .ctrl-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      cursor: none;
+      color: #444;
+      transition: background 0.12s, color 0.12s;
+      position: relative;
+    }
+
+    .ctrl-btn:hover { background: rgba(0,0,0,0.05); color: #111; }
+    .ctrl-btn:active { background: rgba(0,0,0,0.09); }
+    .ctrl-btn:disabled { opacity: 0.25; cursor: none; }
+    .ctrl-btn:disabled:hover { background: transparent; color: #444; }
+    .ctrl-btn .material-icons { font-size: 20px; user-select: none; }
+
+    .ctrl-btn::after {
+      content: attr(data-tip);
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20,20,20,0.78);
+      color: #fff;
+      font-size: 11px;
+      font-family: system-ui, sans-serif;
+      padding: 3px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .ctrl-btn:hover:not(:disabled)::after { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+<div id="pencil-cursor">✏️</div>
+
+<div id="topbar">
+  <div id="palette">
+    <button class="swatch active" data-color="#171717" aria-label="Black"  style="background:#171717"></button>
+    <button class="swatch"        data-color="#ffdd00" aria-label="Yellow" style="background:#ffdd00"></button>
+    <button class="swatch"        data-color="#19d9ff" aria-label="Blue"   style="background:#19d9ff"></button>
+  </div>
+  <div id="controls">
+    <button class="ctrl-btn" id="btn-undo"  data-tip="Undo"  aria-label="Undo"  disabled><span class="material-icons">undo</span></button>
+    <button class="ctrl-btn" id="btn-redo"  data-tip="Redo"  aria-label="Redo"  disabled><span class="material-icons">redo</span></button>
+    <button class="ctrl-btn" id="btn-clear" data-tip="Clear" aria-label="Clear" disabled><span class="material-icons">delete</span></button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('canvas');
+  const ctx    = canvas.getContext('2d');
+  const pencil = document.getElementById('pencil-cursor');
+  const dpr    = window.devicePixelRatio || 1;
+
+  // ── Config ─────────────────────────────────────────────────
+  const LINE_WIDTH = 8;
+  const NUM_COPIES = 4;    // boiling-line animation cel count
+  const WIGGLE_FPS = 8;    // hard-switches per second
+  const WIGGLE_AMP = 2.0;  // max px offset per point per copy
+
+  // ── Canvas sizing ──────────────────────────────────────────
+  function resize() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvas.width  = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    canvas.style.width  = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.scale(dpr, dpr);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // ── Pencil cursor ──────────────────────────────────────────
+  document.addEventListener('mousemove', e => {
+    pencil.style.left = e.clientX + 'px';
+    pencil.style.top  = (e.clientY - 50) + 'px';
+  });
+  document.addEventListener('mouseenter', () => { pencil.style.display = 'block'; });
+  document.addEventListener('mouseleave', () => { pencil.style.display = 'none'; });
+  document.addEventListener('mousemove', () => { pencil.style.display = 'block'; }, { once: true });
+
+  // ── State ──────────────────────────────────────────────────
+  let strokes      = [];
+  let redoStack    = [];
+  let activeStroke = null;
+  let isDrawing    = false;
+  let currentColor = '#171717';
+
+  // ── Boiling line ───────────────────────────────────────────
+  // Each point stores pre-baked random offsets for NUM_COPIES
+  // variations. The renderer hard-switches between copies like
+  // animation cels — no interpolation, no sine waves.
+
+  function makePoint(x, y) {
+    const offsets = [];
+    for (let c = 0; c < NUM_COPIES; c++) {
+      offsets.push({
+        dx: (Math.random() - 0.5) * 2 * WIGGLE_AMP,
+        dy: (Math.random() - 0.5) * 2 * WIGGLE_AMP,
+      });
+    }
+    return { x, y, offsets };
+  }
+
+  function drawStroke(stroke, t) {
+    const pts = stroke.points;
+    if (pts.length < 2) return;
+
+    const ci = Math.floor(t * WIGGLE_FPS) % NUM_COPIES;
+
+    ctx.save();
+    ctx.strokeStyle = stroke.color;
+    ctx.lineWidth   = stroke.width;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.beginPath();
+
+    const o0 = pts[0].offsets[ci];
+    ctx.moveTo(pts[0].x + o0.dx, pts[0].y + o0.dy);
+
+    for (let i = 1; i < pts.length - 1; i++) {
+      const oc = pts[i].offsets[ci];
+      const on = pts[i + 1].offsets[ci];
+      const cx = pts[i].x + oc.dx;
+      const cy = pts[i].y + oc.dy;
+      const nx = pts[i + 1].x + on.dx;
+      const ny = pts[i + 1].y + on.dy;
+      ctx.quadraticCurveTo(cx, cy, (cx + nx) / 2, (cy + ny) / 2);
+    }
+
+    const oL = pts[pts.length - 1].offsets[ci];
+    ctx.lineTo(pts[pts.length - 1].x + oL.dx, pts[pts.length - 1].y + oL.dy);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── Animation loop ─────────────────────────────────────────
+  const startTime = performance.now();
+
+  function frame(now) {
+    const t = (now - startTime) / 1000;
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    for (const stroke of strokes) {
+      drawStroke(stroke, t);
+    }
+    if (activeStroke) {
+      drawStroke(activeStroke, t);
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // ── Drawing input ──────────────────────────────────────────
+  function getPos(e) {
+    const r   = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: src.clientX - r.left, y: src.clientY - r.top };
+  }
+
+  function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+  function onStart(e) {
+    if (e.target !== canvas) return;
+    e.preventDefault();
+    isDrawing = true;
+    const pos = getPos(e);
+    activeStroke = {
+      color:  currentColor,
+      width:  LINE_WIDTH,
+      points: [makePoint(pos.x, pos.y)],
+    };
+  }
+
+  function onMove(e) {
+    e.preventDefault();
+    if (!isDrawing || !activeStroke) return;
+    const pos  = getPos(e);
+    const last = activeStroke.points[activeStroke.points.length - 1];
+    if (dist(pos, last) > 2) {
+      activeStroke.points.push(makePoint(pos.x, pos.y));
+    }
+  }
+
+  function onEnd(e) {
+    e.preventDefault();
+    if (!isDrawing || !activeStroke) return;
+    isDrawing = false;
+    if (activeStroke.points.length >= 2) {
+      strokes.push(activeStroke);
+      redoStack = [];
+      updateButtons();
+    }
+    activeStroke = null;
+  }
+
+  canvas.addEventListener('mousedown',  onStart);
+  canvas.addEventListener('mousemove',  onMove);
+  canvas.addEventListener('mouseup',    onEnd);
+  canvas.addEventListener('mouseleave', onEnd);
+  canvas.addEventListener('touchstart', onStart, { passive: false });
+  canvas.addEventListener('touchmove',  onMove,  { passive: false });
+  canvas.addEventListener('touchend',   onEnd,   { passive: false });
+
+  // ── Palette ────────────────────────────────────────────────
+  document.querySelectorAll('.swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      currentColor = btn.dataset.color;
+    });
+  });
+
+  // ── Controls ───────────────────────────────────────────────
+  const btnUndo  = document.getElementById('btn-undo');
+  const btnRedo  = document.getElementById('btn-redo');
+  const btnClear = document.getElementById('btn-clear');
+
+  function updateButtons() {
+    btnUndo.disabled  = strokes.length === 0;
+    btnRedo.disabled  = redoStack.length === 0;
+    btnClear.disabled = strokes.length === 0;
+  }
+
+  btnUndo.addEventListener('click', () => {
+    if (!strokes.length) return;
+    redoStack.push(strokes.pop());
+    updateButtons();
+  });
+
+  btnRedo.addEventListener('click', () => {
+    if (!redoStack.length) return;
+    strokes.push(redoStack.pop());
+    updateButtons();
+  });
+
+  btnClear.addEventListener('click', () => {
+    strokes   = [];
+    redoStack = [];
+    updateButtons();
+  });
+
+  // ── Keyboard shortcuts ─────────────────────────────────────
+  window.addEventListener('keydown', e => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key === 'z' && !e.shiftKey) { btnUndo.click(); e.preventDefault(); }
+    if (mod && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { btnRedo.click(); e.preventDefault(); }
+  });
+
+})();
+</script>
+</body>
+</html>
