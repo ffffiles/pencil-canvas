@@ -74,7 +74,7 @@ export default function HeroSection({
           <div className="mb-10 md:mb-20 flex gap-2 items-center pointer-events-auto" data-entrance="2">
             <a
               href="mailto:carlfiler@me.com"
-              className="flex items-center gap-2 bg-[var(--button-gray)] hover:bg-[var(--surface-elevation)] rounded-[4px] p-2 cursor-pointer no-underline transition-all duration-150 ease-out active:scale-[0.96]"
+              className="flex items-center gap-2 bg-[var(--button-gray)] hover:bg-[var(--surface-elevation)] rounded-[4px] pl-[8px] pr-[12px] py-[8px] cursor-pointer no-underline transition-all duration-150 ease-out active:scale-[0.96]"
             >
               <img src="/images/icon-mail.svg" alt="" className="w-6 h-6 shrink-0" />
               <span className="font-inter font-medium text-[14px] leading-none tracking-[-0.28px] text-[var(--surface-black)] whitespace-nowrap">
@@ -85,7 +85,7 @@ export default function HeroSection({
               href="https://www.linkedin.com/in/carlfiler"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[var(--button-gray)] hover:bg-[var(--surface-elevation)] rounded-[4px] p-2 cursor-pointer no-underline transition-all duration-150 ease-out active:scale-[0.96]"
+              className="flex items-center gap-2 bg-[var(--button-gray)] hover:bg-[var(--surface-elevation)] rounded-[4px] pl-[8px] pr-[12px] py-[8px] cursor-pointer no-underline transition-all duration-150 ease-out active:scale-[0.96]"
             >
               <img src="/images/icon-linkedin.svg" alt="LinkedIn" className="w-6 h-6 shrink-0" />
               <span className="font-inter font-medium text-[14px] leading-none tracking-[-0.28px] text-[var(--surface-black)] whitespace-nowrap">
